@@ -177,11 +177,12 @@ Status Placer::Run() {
     int assigned_dev_id = 0;
     
     //Assign the node
-    assigned_dev_id = parcore_placement[node->name()] + 1;
+    assigned_dev_id = parcore_placement[node->name()];
     cout << "Assigned Dev ID: " << assigned_dev_id << endl;
     cout << "Node: " << node->name() << endl;
     cout << "Node ID: " << assigned_dev_id << endl;
-
+    
+    cout << "Number of devices in the system: " << devs.size() << endl;
     assigned_device = graph_->InternDeviceName(devs[assigned_dev_id]->name());
     cout << "Assigned device created: " << assigned_device << endl;
     TF_RETURN_IF_ERROR(AssignAndLog(assigned_device, node, &colocation_graph, log_device_placement_)); 
