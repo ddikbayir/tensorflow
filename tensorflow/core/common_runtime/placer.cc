@@ -178,6 +178,7 @@ Status Placer::Run() {
     
     //Assign the node
     assigned_dev_id = parcore_placement[node->name()] + 1;
+    cout << "Assigned Dev ID: " << assigned_dev_id << endl;
     cout << "Node: " << node->name() << endl;
     cout << "Node ID: " << assigned_dev_id << endl;
 
