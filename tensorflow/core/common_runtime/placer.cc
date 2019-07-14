@@ -76,7 +76,7 @@ Status AssignAndLog(int assigned_device, Node* node,
 
   // Constraint the group of node to the assigned device.
   //We disable this to disable placer algo (DOGA)
-  //TF_RETURN_IF_ERROR(colocation_graph->LimitToAssignedDevice(*node));
+  TF_RETURN_IF_ERROR(colocation_graph->LimitToAssignedDevice(*node));
 
   LogDeviceAssignment(node, log_device_placement);
   return Status::OK();
@@ -176,8 +176,14 @@ Status Placer::Run() {
     int assigned_device = 0;
     int assigned_dev_id = 0;
     
+    for(auto &el : devs) {
+        cout << "Device: " << el->name() << endl;
+    }
+    
+     
+   
     //Assign the node
-    assigned_dev_id = parcore_placement[node->name()];
+    assigned_dev_id = parcore_placement[node->name()] + 1;
     cout << "Assigned Dev ID: " << assigned_dev_id << endl;
     cout << "Node: " << node->name() << endl;
     cout << "Node ID: " << assigned_dev_id << endl;
