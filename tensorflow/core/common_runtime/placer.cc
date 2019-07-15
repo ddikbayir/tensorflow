@@ -12,6 +12,10 @@ limitations under the License.
 
 #include "tensorflow/core/common_runtime/placer.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -159,9 +163,17 @@ Status Placer::Run() {
   cout << "Reading placement file..." << endl; 
   std::unordered_map<string, int> parcore_placement;
   
-  
-  std::ifstream placement_file("/home/dogadikbay/placement.place");
-  cout << "Read placement file..." << endl;
+  const char *homedir;
+  char dest_path[200];
+  if((homedir = getenv("HOME")) == NULL) {
+      homedir = getpwuid(getuid())->pw_dir;
+  }
+  strcat(dest_path, homedir);
+  strcat(dest_path, "/placement.place");
+  //strcat(homedir,"/placement.place");
+  //cout << dest_path << endl; 
+  std::ifstream placement_file(dest_path);
+  //cout << "Read placement file..." << endl;
 
   string node_name;
   int placed_dev;
@@ -170,7 +182,7 @@ Status Placer::Run() {
   while(placement_file >> node_name >> placed_dev) {
     parcore_placement[node_name] = placed_dev;
   }
-  cout << "Populated unordered placement map..." << endl;
+  //cout << "Populated unordered placement map..." << endl;
   std::vector<Device*> devs = devices_->devices();
   for(Node* node : graph_->op_nodes()) {
     int assigned_device = 0;
@@ -178,16 +190,16 @@ Status Placer::Run() {
     
     //Assign the node
     assigned_dev_id = parcore_placement[node->name()];
-    cout << "Assigned Dev ID: " << assigned_dev_id << endl;
-    cout << "Node: " << node->name() << endl;
-    cout << "Node ID: " << assigned_dev_id << endl;
+    //cout << "Assigned Dev ID: " << assigned_dev_id << endl;
+    //cout << "Node: " << node->name() << endl;
+    //cout << "Node ID: " << assigned_dev_id << endl;
     
-    cout << "Number of devices in the system: " << devs.size() << endl;
+    //cout << "Number of devices in the system: " << devs.size() << endl;
     assigned_device = graph_->InternDeviceName(devs[assigned_dev_id]->name());
-    cout << "Assigned device created: " << assigned_device << endl;
+    //cout << "Assigned device created: " << assigned_device << endl;
     TF_RETURN_IF_ERROR(AssignAndLog(assigned_device, node, &colocation_graph, log_device_placement_)); 
   }
-  cout << "Finished device assignment without any errors..." << endl;
+  //cout << "Finished device assignment without any errors..." << endl;
   return Status::OK();
 }
 
