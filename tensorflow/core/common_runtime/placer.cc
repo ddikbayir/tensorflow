@@ -163,16 +163,19 @@ Status Placer::Run() {
   cout << "Reading placement file..." << endl; 
   std::unordered_map<string, int> parcore_placement;
   
-  const char *homedir;
-  char dest_path[200];
-  if((homedir = getenv("HOME")) == NULL) {
-      homedir = getpwuid(getuid())->pw_dir;
-  }
-  strcat(dest_path, homedir);
-  strcat(dest_path, "/placement.place");
+  
+  //char dest_path[200];
+  
+  std::string homepath = getenv("HOME");
+  
+  //cout << "HOME-DOGA" << (homepath + "/placement.place").c_str() << endl;
+  ifstream placement_file((homepath + "/placement.place").c_str());
+  
+  //strcat(dest_path, homedir);
+  //strcat(dest_path, "/placement.place");
   //strcat(homedir,"/placement.place");
   //cout << dest_path << endl; 
-  std::ifstream placement_file(dest_path);
+  //std::ifstream placement_file(dest_path);
   //cout << "Read placement file..." << endl;
 
   string node_name;
@@ -180,6 +183,8 @@ Status Placer::Run() {
   int counter= 0;
   //map nodes to assigned devices
   while(placement_file >> node_name >> placed_dev) {
+    //cout << "DEBUG-DOGA" << endl;
+    //cout << node_name << endl;
     parcore_placement[node_name] = placed_dev;
   }
   //cout << "Populated unordered placement map..." << endl;
@@ -189,7 +194,7 @@ Status Placer::Run() {
     int assigned_dev_id = 0;
     
     //Assign the node
-    assigned_dev_id = parcore_placement[node->name()];
+    assigned_dev_id = parcore_placement[node->name()] + 1; // -1 for cpu
     //cout << "Assigned Dev ID: " << assigned_dev_id << endl;
     //cout << "Node: " << node->name() << endl;
     //cout << "Node ID: " << assigned_dev_id << endl;

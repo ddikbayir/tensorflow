@@ -1,0 +1,35 @@
+This short document describes the steps necessary to reproduce the runtime error when we try to train the Inceptionv3 model with our custom TensorFlow version.
+Our custom TF version is only different in core/common_runtime/placer.cc, we simply disable colocation and the standard placer algorithm and enforce a custom placement.
+The custom version is located at custom-1.14.0 branch of this repo.
+
+Prerequisites:
+- CUDA 10.0, CUDNN 7.4
+- A machine with at least two GPU devices
+
+Download and set up Inception repo ():
+
+Prepare training data:
+	# location of where to place the training data
+	DATA_DIR=$HOME/path/to/training/data
+
+	# build the preprocessing script.
+	cd path/to/inception-repo
+	bazel build //inception:download_and_preprocess_flowers
+
+	# run it
+	bazel-bin/inception/download_and_preprocess_flowers "${DATA_DIR}"
+Train model:
+	bazel build //inception:flowers_train
+
+	bazel-bin/inception/flowers_train --growth=True --num_gpus=1 --batch_size=32 --log_device_placement=True --max_steps=100 --data_dir=/path/to/flowers_data
+Steps to reproduce the error:
+
+1-) Get the custom TF repository and switch to branch "custom-1.14.0" (https://github.com/ddikbayir/tensorflow)
+2-) Our custom version is in branch custom-1.14.0
+3-) Build TF from source using bazel (XLA disabled,CUDA enabled,ares disabled)
+    Note: the pre-build configuration of TF is interactive, therefore I could       not fully automate this part. After running ./configure under TF repo root,     simply run:
+        - bazel build //tensorflow/tools/pip_package:build_pip_package
+        - bazel-bin/tensorflow/tools/pip_package/build_pip_package ./whl_out/
+        - pip install ./whl_out/whl_file_name (uninstall other versions of TF)
+4-) Make sure the $HOME env variable is set and put "placement.place" under your $HOME folder
+5-) When using the command to train the Inception model, the runtime error appears.
