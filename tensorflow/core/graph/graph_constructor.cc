@@ -929,10 +929,10 @@ Status GraphConstructor::Convert() {
   std::string a,c;
   int b;
   std::ofstream myfile;
-  myfile.open ("/home/dogadikbay/placement.place");
+  myfile.open ("/home/dogadikbay/confirm_placement.place");
   while (infile >> a >> b)
   {
-	if(b == 4)
+	if(b == 5)
 	  c = "/job:localhost/replica:0/task:0/device:CPU:0";
 	else
 	  c = "/job:localhost/replica:0/task:0/device:GPU:" + std::to_string(b); 
