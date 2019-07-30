@@ -932,7 +932,7 @@ Status GraphConstructor::Convert() {
   myfile.open ("/home/dogadikbay/confirm_placement.place");
   while (infile >> a >> b)
   {
-	if(b == 5)
+	if(b == 4)
 	  c = "/job:localhost/replica:0/task:0/device:CPU:0";
 	else
 	  c = "/job:localhost/replica:0/task:0/device:GPU:" + std::to_string(b); 
